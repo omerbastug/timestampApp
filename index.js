@@ -33,7 +33,9 @@ app.get("/api/:date?", (req,res) => {
   if(!dategiven){
     return res.json(apiResoponseJson(new Date()));
   }
-
+  if(dategiven.includes("%20")){
+    dategiven.replace("%20", " ");
+  }
   let stringvalidation = new Date(dategiven.toString());
   let isunix = /^\d+$/.test(dategiven);
   console.log("string : " + stringvalidation)
@@ -48,9 +50,7 @@ app.get("/api/:date?", (req,res) => {
     console.log("unix block");
     return res.status(200).json(apiResoponseJson(date));
   }
-  if(dategiven.includes("%20")){
-    dategiven.replace("%20", " ");
-  }
+
 
 
   return res.status(403).json({error: "Invalid Date"})
