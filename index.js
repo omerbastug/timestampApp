@@ -34,23 +34,18 @@ app.get("/api/:date?", (req,res) => {
     return res.json(apiResoponseJson(new Date()));
   }
 
-  if(dategiven.includes("%20")){
-    dategiven.replace("%20", " ");
-  }
-
-  let stringvalidation = new Date(dategiven.toString());
-  let isunix = /^\d+$/.test(dategiven);
-  console.log("string : " + stringvalidation)
-  if(stringvalidation != "Invalid Date" && !isunix){// String format validation
-    console.log("string block");
-    return res.status(200).json(apiResoponseJson(new Date(stringvalidation)));
-  }
-
-  let date = new Date(parseInt(dategiven)) // Unix timestamp format validation
-  console.log("unix : " +date);
-  if(date != "Invalid Date"){
+  let isunix = /^\d+$/.test(dategiven);// Unix timestamp format validation
+  if(isunix){
     console.log("unix block");
-    return res.status(200).json(apiResoponseJson(date));
+    return res.status(200).json(apiResoponseJson(new Date(parseInt(dategiven))));
+  }
+
+  dategiven.replace("%20", " ");
+
+  let dateFromString = new Date(dategiven);
+  if(dateFromString != "Invalid Date"){// String format validation
+    console.log("string block");
+    return res.status(200).json(apiResoponseJson(new Date(dateFromString)));
   }
 
   return res.status(403).json({error: "Invalid Date"})
@@ -60,21 +55,21 @@ function apiResoponseJson( date ){
   return {
     unix: Math.floor(date.getTime())
     , 
-    utc: myDateUTCFormat(date)}
+    utc: date.toUTCString()}
 }
 
-function myDateUTCFormat( date ){
-  var day =  date.getUTCDate();
-  day = day<10 ? "0"+day : day;
-  var hours = date.getUTCHours();
-  hours = hours<10 ? "0"+hours : hours;
-  var minutes = date.getUTCMinutes();
-  minutes = minutes<10 ? "0"+minutes : minutes;
-  var seconds = date.getUTCSeconds();
-  seconds = seconds<10 ? "0"+seconds : seconds;
-  var time = hours+":"+minutes+":"+seconds;
-  return ""+daysOfWeek[date.getUTCDay() - 1]+ ", " + day + " " +months[date.getUTCMonth()]+ " " + date.getUTCFullYear() + " " + time + " GMT";
-}
+// function myDateUTCFormat( date ){
+//   var day =  date.getUTCDate();
+//   day = day<10 ? "0"+day : day;
+//   var hours = date.getUTCHours();
+//   hours = hours<10 ? "0"+hours : hours;
+//   var minutes = date.getUTCMinutes();
+//   minutes = minutes<10 ? "0"+minutes : minutes;
+//   var seconds = date.getUTCSeconds();
+//   seconds = seconds<10 ? "0"+seconds : seconds;
+//   var time = hours+":"+minutes+":"+seconds;
+//   return ""+daysOfWeek[date.getUTCDay() - 1]+ ", " + day + " " +months[date.getUTCMonth()]+ " " + date.getUTCFullYear() + " " + time + " GMT";
+// }
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
