@@ -24,9 +24,53 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+const daysOfWeek = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
+app.get("/api/:date?", (req,res) => {
+  let dategiven = req.params.date;
+
+  if(!dategiven){
+    return res.json(apiResoponseJson(new Date()));
+  }
+  
+  let date = new Date(parseInt(dategiven)) // Unix timestamp format validation
+  console.log("unix : " +date);
+  if(date != "Invalid Date"){
+    console.log("unix block");
+    return res.status(200).json(apiResoponseJson(date));
+  }
+
+  let stringvalidation = new Date(dategiven);
+  console.log("string : " + stringvalidation)
+  if(stringvalidation != "Invalid Date"){// String format validation
+    console.log("string block");
+    return res.status(200).json(apiResoponseJson(new Date(stringvalidation)));
+  }
+
+  return res.status(403).json({error: "Invalid Date"})
+})
+
+function apiResoponseJson( date ){
+  return {
+    unix: date.valueOf(), 
+    utc: myDateUTCFormat(date)}
+}
+
+function myDateUTCFormat( date ){
+  var day =  date.getUTCDate();
+  day = day<10 ? "0"+day : day;
+  var hours = date.getUTCHours();
+  hours = hours<10 ? "0"+hours : hours;
+  var minutes = date.getUTCMinutes();
+  minutes = minutes<10 ? "0"+minutes : minutes;
+  var seconds = date.getUTCSeconds();
+  seconds = seconds<10 ? "0"+seconds : seconds;
+  var time = hours+":"+minutes+":"+seconds;
+  return ""+daysOfWeek[date.getUTCDay() - 1]+ ", " + day + " " +months[date.getUTCMonth()]+ " " + date.getUTCFullYear() + " " + time + " GMT";
+}
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
+var listener = app.listen(1031, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
