@@ -33,12 +33,15 @@ app.get("/api/:date?", (req,res) => {
   if(!dategiven){
     return res.json(apiResoponseJson(new Date()));
   }
+
   let stringvalidation = new Date(dategiven.toString());
+  let isunix = /^\d+$/.test(dategiven);
   console.log("string : " + stringvalidation)
-  if(stringvalidation != "Invalid Date"){// String format validation
+  if(stringvalidation != "Invalid Date" && !isunix){// String format validation
     console.log("string block");
     return res.status(200).json(apiResoponseJson(new Date(stringvalidation)));
   }
+
   let date = new Date(parseInt(dategiven)) // Unix timestamp format validation
   console.log("unix : " +date);
   if(date != "Invalid Date"){
@@ -55,7 +58,7 @@ app.get("/api/:date?", (req,res) => {
 
 function apiResoponseJson( date ){
   return {
-    unix: Math.floor(date.getTime() / 1000)
+    unix: Math.floor(date.getTime())
     , 
     utc: myDateUTCFormat(date)}
 }
