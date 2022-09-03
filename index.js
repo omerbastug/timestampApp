@@ -60,7 +60,7 @@ function apiResoponseJson( date ){
   return {
     unix: Math.floor(date.getTime())
     , 
-    utc: date.toString()}
+    utc: myDateUTCFormat(date)}
 }
 
 function myDateUTCFormat( date ){
